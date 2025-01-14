@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using BazaMuzyczna.Models;
+using BazaMuzyczna.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
