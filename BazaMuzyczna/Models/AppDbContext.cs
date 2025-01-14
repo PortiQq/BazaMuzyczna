@@ -8,5 +8,10 @@ namespace BazaMuzyczna.Models
         { 
         }
         public DbSet<User> User { get; set; }
+        public DbSet<Track> Track { get; set; }
+        public DbSet<Album> Album { get; set; }
+        public DbSet<Playback> Playback { get; set; }
+        public DbSet<Genre> Genre { get; set; }
+
     }
 }
