@@ -24,6 +24,7 @@ namespace BazaMuzyczna.Models
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
+
         }
     }
 }

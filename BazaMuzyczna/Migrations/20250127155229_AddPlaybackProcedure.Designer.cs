@@ -3,6 +3,7 @@ using System;
 using BazaMuzyczna.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BazaMuzyczna.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250127155229_AddPlaybackProcedure")]
+    partial class AddPlaybackProcedure
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,7 +47,7 @@ namespace BazaMuzyczna.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Album", (string)null);
+                    b.ToTable("Album");
                 });
 
             modelBuilder.Entity("BazaMuzyczna.Models.Genre", b =>
@@ -64,7 +67,7 @@ namespace BazaMuzyczna.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Genre", (string)null);
+                    b.ToTable("Genre");
                 });
 
             modelBuilder.Entity("BazaMuzyczna.Models.Playback", b =>
@@ -90,7 +93,7 @@ namespace BazaMuzyczna.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Playback", (string)null);
+                    b.ToTable("Playback");
                 });
 
             modelBuilder.Entity("BazaMuzyczna.Models.Track", b =>
@@ -120,7 +123,7 @@ namespace BazaMuzyczna.Migrations
 
                     b.HasIndex("GenreId");
 
-                    b.ToTable("Track", (string)null);
+                    b.ToTable("Track");
                 });
 
             modelBuilder.Entity("BazaMuzyczna.Models.User", b =>
@@ -144,7 +147,7 @@ namespace BazaMuzyczna.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("User", (string)null);
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("BazaMuzyczna.Models.Album", b =>
