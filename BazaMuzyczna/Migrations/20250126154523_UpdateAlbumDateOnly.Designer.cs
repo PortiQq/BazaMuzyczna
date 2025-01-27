@@ -3,6 +3,7 @@ using System;
 using BazaMuzyczna.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BazaMuzyczna.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250126154523_UpdateAlbumDateOnly")]
+    partial class UpdateAlbumDateOnly
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,9 +63,6 @@ namespace BazaMuzyczna.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
 
                     b.ToTable("Genre");
                 });
@@ -114,11 +114,16 @@ namespace BazaMuzyczna.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("TrackId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AlbumId");
 
                     b.HasIndex("GenreId");
+
+                    b.HasIndex("TrackId");
 
                     b.ToTable("Track");
                 });
@@ -140,9 +145,6 @@ namespace BazaMuzyczna.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
 
                     b.ToTable("User");
                 });
@@ -191,6 +193,10 @@ namespace BazaMuzyczna.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BazaMuzyczna.Models.Track", null)
+                        .WithMany("Tracks")
+                        .HasForeignKey("TrackId");
+
                     b.Navigation("Album");
 
                     b.Navigation("Genre");
@@ -202,6 +208,11 @@ namespace BazaMuzyczna.Migrations
                 });
 
             modelBuilder.Entity("BazaMuzyczna.Models.Genre", b =>
+                {
+                    b.Navigation("Tracks");
+                });
+
+            modelBuilder.Entity("BazaMuzyczna.Models.Track", b =>
                 {
                     b.Navigation("Tracks");
                 });

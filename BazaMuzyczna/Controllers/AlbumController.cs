@@ -41,17 +41,20 @@ namespace BazaMuzyczna.Controllers
             return album;
         }
 
+        //TODO: Autoryzacja własności albumu
         // PUT: api/Album/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAlbum(int id, Album album)
-        {
-            if (id != album.Id)
+        public async Task<IActionResult> PutAlbum(int id, Album updatedAlbum)
+        { 
+            var album = await _context.Album.FindAsync(id);
+            if (album == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(album).State = EntityState.Modified;
+            album.Name = updatedAlbum.Name;
+            album.ReleaseDate = updatedAlbum.ReleaseDate;
+            album.UserId = updatedAlbum.UserId;
 
             try
             {
@@ -72,17 +75,18 @@ namespace BazaMuzyczna.Controllers
             return NoContent();
         }
 
+        // Autoryzacja użytkownika
         // POST: api/Album
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Album>> PostAlbum(Album album)
         {
             _context.Album.Add(album);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAlbum", new { id = album.Id }, album);
+            return CreatedAtAction("GetAlbum", album);
         }
 
+        // Autoryzacja użytkownika
         // DELETE: api/Album/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAlbum(int id)

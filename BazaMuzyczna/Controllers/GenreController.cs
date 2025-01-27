@@ -11,50 +11,47 @@ namespace BazaMuzyczna.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class GenreController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public UserController(AppDbContext context)
+        public GenreController(AppDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/User
+        // GET: api/Genre
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUser()
+        public async Task<ActionResult<IEnumerable<Genre>>> GetGenre()
         {
-            return await _context.User.ToListAsync();
+            return await _context.Genre.ToListAsync();
         }
 
-        // GET: api/User/5
+        // GET: api/Genre/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<Genre>> GetGenre(int id)
         {
-            var user = await _context.User.FindAsync(id);
+            var genre = await _context.Genre.FindAsync(id);
 
-            if (user == null)
+            if (genre == null)
             {
                 return NotFound();
             }
 
-            return user;
+            return genre;
         }
 
-        // PUT: api/User/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // PUT: api/Genre/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User updatedUser)
+        public async Task<IActionResult> PutGenre(int id, Genre updatedGenre)
         {
-            var user = await _context.User.FindAsync(id);
-
-            if (user == null)
+            var genre = await _context.Genre.FindAsync(id);
+            if (genre == null)
             {
                 return NotFound();
             }
-
-            user.Name = updatedUser.Name;
-            user.Email = updatedUser.Email;
+            
+            genre.Name = updatedGenre.Name;
 
             try
             {
@@ -62,7 +59,7 @@ namespace BazaMuzyczna.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!GenreExists(id))
                 {
                     return NotFound();
                 }
@@ -75,35 +72,35 @@ namespace BazaMuzyczna.Controllers
             return NoContent();
         }
 
-        // POST: api/User
+        // POST: api/Genre
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<Genre>> PostGenre(Genre genre)
         {
-            _context.User.Add(user);
+            _context.Genre.Add(genre);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", user);
+            return CreatedAtAction("GetGenre", genre);
         }
 
-        // DELETE: api/User/5
+        // DELETE: api/Genre/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        public async Task<IActionResult> DeleteGenre(int id)
         {
-            var user = await _context.User.FindAsync(id);
-            if (user == null)
+            var genre = await _context.Genre.FindAsync(id);
+            if (genre == null)
             {
                 return NotFound();
             }
 
-            _context.User.Remove(user);
+            _context.Genre.Remove(genre);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool UserExists(int id)
+        private bool GenreExists(int id)
         {
-            return _context.User.Any(e => e.Id == id);
+            return _context.Genre.Any(e => e.Id == id);
         }
     }
 }

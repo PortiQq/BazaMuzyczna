@@ -6,7 +6,7 @@
         public string Name { get; set; }
         public string Email { get; set; }
 
-        public ICollection<Album> Albums { get; set; }
-        public ICollection<Playback> Playbacks { get; set; }
+        public ICollection<Album> Albums { get; set; } = new List<Album>();
+        public ICollection<Playback> Playbacks { get; set; } = new List<Playback>();
     }
 }

@@ -7,12 +7,10 @@
         public TimeSpan Duration { get; set; }
 
         public int AlbumId { get; set; }
-        public Album Album { get; set; }
+        public Album? Album { get; set; }
 
         public int GenreId { get; set; }
-        public Genre Genre { get; set; }
-
-        public ICollection<Track> Tracks { get; set; }
+        public Genre? Genre { get; set; }
 
     }
 }
