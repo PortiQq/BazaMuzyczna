@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BazaMuzyczna.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BazaMuzyczna.Controllers
 {
@@ -73,6 +74,7 @@ namespace BazaMuzyczna.Controllers
         }
 
         // POST: api/Genre
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<Genre>> PostGenre(Genre genre)
         {

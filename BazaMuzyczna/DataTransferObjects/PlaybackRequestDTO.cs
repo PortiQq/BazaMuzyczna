@@ -1,8 +1,7 @@
-﻿namespace BazaMuzyczna.DataTransferObject
+﻿namespace BazaMuzyczna.DataTransferObjects
 {
     public class PlaybackRequestDTO
     {
-        public int UserId { get; set; }
         public int TrackId { get; set; }
     }
 }

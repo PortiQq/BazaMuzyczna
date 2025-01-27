@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BazaMuzyczna.Models;
-using BazaMuzyczna.DataTransferObject;
+using BazaMuzyczna.DataTransferObjects;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BazaMuzyczna.Controllers
 {
@@ -42,31 +43,27 @@ namespace BazaMuzyczna.Controllers
             return playback;
         }
 
-        // POST: api/Playback
-        [HttpPost()]
-        public async Task<ActionResult<Playback>> PostPlayback(Playback playback)
-        {
-            _context.Playback.Add(playback);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPlayback", playback);
-        }
-
         //POST: api/Playback/add
+        [Authorize]
         [HttpPost("add")]
         public async Task<IActionResult> AddPlayback([FromBody] PlaybackRequestDTO request)
         {
-            // Wyświetlanie wartości w konsoli
-            Console.WriteLine($"UserId: {request.UserId}, TrackId: {request.TrackId}");
-
-            if (request.UserId <= 0 || request.TrackId <= 0)
-            {
-                return BadRequest(new { message = "Invalid userId or trackId." });
-            }
-
             try
             {
-                var userIdParam = new Npgsql.NpgsqlParameter("user_id", request.UserId);
+                var userIdClaim = User.FindFirst("UserId");
+                if (userIdClaim == null)
+                {
+                    return Unauthorized(new { message = "Invalid token: UserId not found" });
+                }
+
+                if (request.TrackId <= 0)
+                {
+                    return BadRequest(new { message = "trackId." });
+                }
+
+                int userId  = int.Parse(userIdClaim.Value);
+
+                var userIdParam = new Npgsql.NpgsqlParameter("user_id", userId);
                 var trackIdParam = new Npgsql.NpgsqlParameter("track_id", request.TrackId);
 
                 await _context.Database.ExecuteSqlRawAsync(

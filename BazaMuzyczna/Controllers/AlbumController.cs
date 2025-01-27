@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BazaMuzyczna.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BazaMuzyczna.Controllers
 {
@@ -76,8 +77,9 @@ namespace BazaMuzyczna.Controllers
         }
 
         // Autoryzacja użytkownika
-        // POST: api/Album
-        [HttpPost]
+        // POST: api/Album/add
+        [Authorize]
+        [HttpPost("add")]
         public async Task<ActionResult<Album>> PostAlbum(Album album)
         {
             _context.Album.Add(album);
