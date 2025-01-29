@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BazaMuzyczna.Models;
 using Microsoft.AspNetCore.Authorization;
+using BazaMuzyczna.DataTransferObjects;
 
 namespace BazaMuzyczna.Controllers
 {
@@ -23,16 +24,35 @@ namespace BazaMuzyczna.Controllers
 
         // GET: api/Genre
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Genre>>> GetGenre()
+        public async Task<ActionResult<IEnumerable<GenreNameDTO>>> GetGenre()
         {
-            return await _context.Genre.ToListAsync();
+            var genres = await _context.Genre
+                .Select(a => new GenreNameDTO
+                {
+                    Id = a.Id,
+                    Name = a.Name
+                }).ToListAsync();
+
+                return genres;
         }
 
         // GET: api/Genre/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Genre>> GetGenre(int id)
+        public async Task<ActionResult<GenreDTO>> GetGenre(int id)
         {
-            var genre = await _context.Genre.FindAsync(id);
+            var genre = await _context.Genre
+                   .Where(a => a.Id == id)
+                   .Include(a => a.Tracks)
+                   .Select(a => new GenreDTO
+                   {
+                       Id = a.Id,
+                       Name = a.Name,
+                       Tracks = a.Tracks.Select(t => new TrackTitleDTO
+                       {
+                           Title = t.Title
+                       }).ToList()
+                   })
+                   .FirstOrDefaultAsync();
 
             if (genre == null)
             {
@@ -43,6 +63,7 @@ namespace BazaMuzyczna.Controllers
         }
 
         // PUT: api/Genre/5
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGenre(int id, Genre updatedGenre)
         {
@@ -85,6 +106,7 @@ namespace BazaMuzyczna.Controllers
         }
 
         // DELETE: api/Genre/5
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGenre(int id)
         {

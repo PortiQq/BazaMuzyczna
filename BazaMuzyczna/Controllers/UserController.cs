@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BazaMuzyczna.Models;
+using BazaMuzyczna.DataTransferObjects;
 
 namespace BazaMuzyczna.Controllers
 {
@@ -22,16 +23,41 @@ namespace BazaMuzyczna.Controllers
 
         // GET: api/User
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUser()
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUser()
         {
-            return await _context.User.ToListAsync();
+            var users = await _context.User
+                .Select(u => new UserDTO
+                {
+                    Id = u.Id,
+                    Name = u.Name,
+                    Email = u.Email,
+                    Albums = u.Albums.Select(a => new AlbumNameDTO
+                    {
+                        Name = a.Name
+                    }).ToList()
+                }).ToListAsync();
+
+            return users;
         }
 
         // GET: api/User/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<UserDTO>> GetUser(int id)
         {
-            var user = await _context.User.FindAsync(id);
+
+            var user = await _context.User
+                   .Where(u => u.Id == id)
+                   .Select(u => new UserDTO
+                   {
+                       Id = u.Id,
+                       Name = u.Name,
+                       Email = u.Email,
+                       Albums = u.Albums.Select(a => new AlbumNameDTO
+                       {
+                           Name = a.Name
+                       }).ToList()
+                   })
+                   .FirstOrDefaultAsync();
 
             if (user == null)
             {
@@ -42,7 +68,6 @@ namespace BazaMuzyczna.Controllers
         }
 
         // PUT: api/User/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, User updatedUser)
         {

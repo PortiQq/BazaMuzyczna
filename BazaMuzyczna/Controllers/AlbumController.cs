@@ -33,9 +33,10 @@ namespace BazaMuzyczna.Controllers
                     .Include(a => a.Tracks)
                     .Select(a => new AlbumDTO
                     {
+                        Id = a.Id,
                         Name = a.Name,
                         ReleaseDate = a.ReleaseDate,
-                        User = new UserDTO
+                        User = new UserNameDTO
                         {
                             Name = a.User.Name,
                         },
@@ -67,9 +68,10 @@ namespace BazaMuzyczna.Controllers
                     .Include(a => a.Tracks)
                     .Select(a => new AlbumDTO
                     {
+                        Id = a.Id,
                         Name = a.Name,
                         ReleaseDate = a.ReleaseDate,
-                        User = new UserDTO
+                        User = new UserNameDTO
                         {
                             Name = a.User.Name,
                         },
@@ -114,9 +116,10 @@ namespace BazaMuzyczna.Controllers
                     .Include(a => a.Tracks)
                     .Select(a => new AlbumDTO
                     {
+                    Id = a.Id,
                     Name = a.Name,
                     ReleaseDate = a.ReleaseDate,
-                    User = new UserDTO
+                    User = new UserNameDTO
                     {
                         Name = a.User.Name,
                     },
