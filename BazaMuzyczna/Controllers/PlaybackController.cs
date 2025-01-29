@@ -81,7 +81,6 @@ namespace BazaMuzyczna.Controllers
         }
 
 
-
         // DELETE: api/Playback/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePlayback(int id)
