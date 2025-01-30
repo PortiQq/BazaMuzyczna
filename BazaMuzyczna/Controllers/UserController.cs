@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BazaMuzyczna.Models;
 using BazaMuzyczna.DataTransferObjects;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BazaMuzyczna.Controllers
 {
@@ -67,12 +68,21 @@ namespace BazaMuzyczna.Controllers
             return user;
         }
 
-        // PUT: api/User/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User updatedUser)
+        // PUT: api/User
+        [Authorize]
+        [HttpPut("EditAccount")]
+        public async Task<IActionResult> PutUser(UserRequestDTO updatedUser)
         {
-            var user = await _context.User.FindAsync(id);
 
+            var userIdClaim = User.FindFirst("UserId");
+            if (userIdClaim == null)
+            {
+                return Unauthorized(new { message = "Invalid token: UserId not found" });
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            var user = await _context.User.FindAsync(userId);
             if (user == null)
             {
                 return NotFound();
@@ -80,6 +90,7 @@ namespace BazaMuzyczna.Controllers
 
             user.Name = updatedUser.Name;
             user.Email = updatedUser.Email;
+            user.Password = updatedUser.Password;
 
             try
             {
@@ -87,7 +98,7 @@ namespace BazaMuzyczna.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!UserExists(userId))
                 {
                     return NotFound();
                 }
@@ -100,8 +111,8 @@ namespace BazaMuzyczna.Controllers
             return NoContent();
         }
 
-        // POST: api/User
-        [HttpPost]
+        // POST: api/User/register
+        [HttpPost("register")]
         public async Task<ActionResult<User>> PostUser(User user)
         {
             _context.User.Add(user);
@@ -110,11 +121,19 @@ namespace BazaMuzyczna.Controllers
             return CreatedAtAction("GetUser", user);
         }
 
-        // DELETE: api/User/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        // DELETE: api/User/delete
+        [HttpDelete("delete")]
+        public async Task<IActionResult> DeleteUser()
         {
-            var user = await _context.User.FindAsync(id);
+            var userIdClaim = User.FindFirst("UserId");
+            if (userIdClaim == null)
+            {
+                return Unauthorized(new { message = "Invalid token: UserId not found" });
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            var user = await _context.User.FindAsync(userId);
             if (user == null)
             {
                 return NotFound();

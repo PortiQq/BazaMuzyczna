@@ -139,7 +139,6 @@ namespace BazaMuzyczna.Controllers
             }
         }
 
-        //TODO: Autoryzacja własności albumu
         // PUT: api/Album/5
         [Authorize]
         [HttpPut("{id}")]
@@ -186,7 +185,6 @@ namespace BazaMuzyczna.Controllers
             return NoContent();
         }
 
-        // Autoryzacja użytkownika
         // POST: api/Album/add
         [Authorize]
         [HttpPost("add")]
@@ -228,6 +226,9 @@ namespace BazaMuzyczna.Controllers
 
             int userId = int.Parse(userIdClaim.Value);
 
+            var track = await _context.Track
+                .Include(t => t.Album) // Pobranie albumu, do którego należy utwór
+                .FirstOrDefaultAsync(t => t.Id == id);
 
             var album = await _context.Album.FindAsync(id);
             if (album == null)

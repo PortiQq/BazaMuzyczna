@@ -25,17 +25,16 @@ namespace BazaMuzyczna.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDTO request)
         {
-            // Pobierz użytkownika z bazy danych na podstawie nazwy użytkownika
             var user = await _context.User.FirstOrDefaultAsync(u => u.Email == request.Email);
 
             if (user == null)
             {
-                return Unauthorized(new { Message = "Invalid username or password" });
+                return Unauthorized(new { Message = "Invalid email or password" });
             }
 
             if (!(user.Password == request.Password))
             {
-                return Unauthorized(new { Message = "Invalid username or password" });
+                return Unauthorized(new { Message = "Invalid email or password" });
             }
 
             var token = _jwtService.GenerateToken(user.Name, user.Id);

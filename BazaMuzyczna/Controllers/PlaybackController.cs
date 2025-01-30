@@ -22,27 +22,6 @@ namespace BazaMuzyczna.Controllers
             _context = context;
         }
 
-        // GET: api/Playback
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Playback>>> GetPlayback()
-        {
-            return await _context.Playback.ToListAsync();
-        }
-
-        // GET: api/Playback/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Playback>> GetPlayback(int id)
-        {
-            var playback = await _context.Playback.FindAsync(id);
-
-            if (playback == null)
-            {
-                return NotFound();
-            }
-
-            return playback;
-        }
-
         //POST: api/Playback/add
         [Authorize]
         [HttpPost("add")]
@@ -61,7 +40,7 @@ namespace BazaMuzyczna.Controllers
                     return BadRequest(new { message = "trackId." });
                 }
 
-                int userId  = int.Parse(userIdClaim.Value);
+                int userId = int.Parse(userIdClaim.Value);
 
                 var userIdParam = new Npgsql.NpgsqlParameter("user_id", userId);
                 var trackIdParam = new Npgsql.NpgsqlParameter("track_id", request.TrackId);
@@ -80,21 +59,65 @@ namespace BazaMuzyczna.Controllers
             }
         }
 
+        // GET: api/Playback/favourites
+        [Authorize]
+        [HttpGet("favourites")]
+        public async Task<ActionResult<IEnumerable<PlaybackDTO>>> GetFavouritePlaybacks()
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst("UserId");
+                if (userIdClaim == null)
+                {
+                    return Unauthorized(new { message = "Invalid token: UserId not found" });
+                }
+                int userId = int.Parse(userIdClaim.Value);
 
-        // DELETE: api/Playback/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePlayback(int id)
+                var playbacks = await _context.Playback
+                    .Where(p => p.UserId == userId && p.Quantity > 2)
+                    .OrderByDescending(p => p.Quantity)
+                    .Select(p => new PlaybackDTO
+                    {
+                        Id = p.Id,
+                        TrackId = p.TrackId,
+                        Quantity = p.Quantity,
+                        Track = new TrackTitleDTO
+                        {
+                            Title = p.Track.Title
+                        }
+                    })
+                    .ToListAsync();
+
+                return Ok(playbacks);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "An error occurred", details = ex.Message });
+            }
+        }
+
+
+        // GET: api/Playback
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Playback>>> GetPlayback()
+        {
+            return await _context.Playback.ToListAsync();
+        }
+
+        // GET: api/Playback/5
+        [Authorize]
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Playback>> GetPlayback(int id)
         {
             var playback = await _context.Playback.FindAsync(id);
+
             if (playback == null)
             {
                 return NotFound();
             }
 
-            _context.Playback.Remove(playback);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return playback;
         }
 
         private bool PlaybackExists(int id)     
